@@ -42,8 +42,8 @@ DRF_APPS = [
 ]
 
 PROJECT_APPS = [
-    'apps.portfolio',
-    'apps.bid'
+    'apps.portfolios',
+    'apps.bids'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + DRF_APPS + PROJECT_APPS
