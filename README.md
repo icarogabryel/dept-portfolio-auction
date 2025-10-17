@@ -3,7 +3,8 @@
 This monorepo contains the source code for a web application that makes the auctioning of dept portfolios.
 
 <!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
-em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure -->
+em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
+organization folder -->
 
 ## ToDo List
 

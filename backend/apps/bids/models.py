@@ -8,7 +8,7 @@ from ..portfolios.models import Portfolio
 class Bid(models.Model):
     id: models.BigAutoField  # For type hinting purposes
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='bids'
+        User, on_delete=models.PROTECT, related_name='bids'
     )
     portfolio = models.ForeignKey(
         Portfolio,
@@ -29,8 +29,10 @@ class Bid(models.Model):
     class Meta:
         ordering = ['-amount']  # Higher bids first
         unique_together = ('user', 'portfolio')
+        verbose_name = 'Bid'
+        verbose_name_plural = 'Bids'
 
     def __str__(self):
         return (
-            f"Bid of {self.amount} by {self.user.username} on {self.portfolio.name} ({self.status})"
+            f'Bid of {self.amount} by {self.user.username} on {self.portfolio.name} ({self.status})'
         )
