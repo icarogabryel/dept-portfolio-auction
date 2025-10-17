@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-# Create your views here.
+from .models import Bid
+from .serializers import BidSerializer
+
+
+class BidCollectionView(ListCreateAPIView):
+    queryset = Bid.objects.all()
+    serializer_class = BidSerializer
+
+
+class BidResourceView(RetrieveUpdateDestroyAPIView):
+    queryset = Bid.objects.all()
+    serializer_class = BidSerializer
