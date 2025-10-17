@@ -1,8 +1,6 @@
 from django.db import models
 from django.db.models import QuerySet
 
-from ..bids.models import Bid
-
 
 class Portfolio(models.Model):
     id: models.AutoField  # For type hinting purposes
@@ -11,7 +9,7 @@ class Portfolio(models.Model):
     description = models.TextField()
     minimum_bid = models.DecimalField(max_digits=10, decimal_places=2)
     auction_end = models.DateTimeField()
-    bids: QuerySet[Bid]  # For type hinting purposes
+    bids: QuerySet  # For type hinting purposes
 
     class Meta:
         ordering = ['-auction_end']  # Most recent auctions first

@@ -4,7 +4,7 @@ from django.db import models
 from ..portfolios.models import Portfolio
 
 
-# Relacional entity between User and Portfolio
+# Relational entity between User and Portfolio
 class Bid(models.Model):
     id: models.BigAutoField  # For type hinting purposes
     user = models.ForeignKey(
