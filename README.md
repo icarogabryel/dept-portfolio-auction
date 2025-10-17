@@ -4,7 +4,7 @@ This monorepo contains the source code for a web application that makes the auct
 
 <!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
 em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
-organization folder, validation and permissions -->
+organization folder, validation and permissions, JWT authentication, tasks e signals -->
 
 ## ToDo List
 
@@ -14,7 +14,8 @@ organization folder, validation and permissions -->
   - [X] Create users serializers, views and URL routing (Uses Django's built-in User model)
   - [ ] Signals to update bids status
   - [ ] Enhance serializers with validation
-  - [X] Implement authentication and authorization (Owning, admin, etc.)
+  - [X] Implement JWT authentication
+  - [ ] Implement authorization (Owning, admin, etc.)
   - [ ] Lote creation of portfolios
   - [ ] Implement WebSocket support for real-time bidding updates
   - [ ] Implement Celery for background tasks (e.g., closing auctions, sending notifications)
@@ -25,3 +26,5 @@ organization folder, validation and permissions -->
   - [ ] Create active Portfolio listing and detail pages
   - [ ] Create user dashboard to view owned portfolios and bids
   - [ ] Implement real-time updates using WebSockets
+- [ ] Create Docker setup for easy deployment
+- [ ] Write comprehensive documentation
