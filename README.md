@@ -22,7 +22,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [ ] Add unit tests for views and models
   - [ ] Add GitHub Actions for CI/CD
 - [ ] Frontend
-  - [ ] Create Login and Registration pages
+  - [X] Create Login and Registration page
   - [ ] Create active Portfolio listing and detail pages
   - [ ] Create user dashboard to view owned portfolios and bids
   - [ ] Implement real-time updates using WebSockets
