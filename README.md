@@ -4,7 +4,7 @@ This monorepo contains the source code for a web application that makes the auct
 
 <!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
 em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
-organization folder, validation and permissions, JWT authentication, tasks e signals -->
+organization folder, validation and permissions, JWT authentication, tasks e signals, use of getter (property) and derivated properties, axios, cors headers -->
 
 ## ToDo List
 
@@ -26,5 +26,6 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [ ] Create active Portfolio listing and detail pages
   - [ ] Create user dashboard to view owned portfolios and bids
   - [ ] Implement real-time updates using WebSockets
+- [ ] Integrate frontend with backend APIs
 - [ ] Create Docker setup for easy deployment
 - [ ] Write comprehensive documentation

@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import QuerySet
+from django.utils import timezone
 
 
 class Portfolio(models.Model):
@@ -18,6 +19,10 @@ class Portfolio(models.Model):
 
     def __str__(self):
         return f'Portfolio: {self.name} (Ends: {self.auction_end})'
+
+    @property
+    def is_active(self):
+        return self.auction_end > timezone.now()
 
     def get_winning_bid(self):
         return self.bids.order_by('-amount').first()  # Highest bid wins
