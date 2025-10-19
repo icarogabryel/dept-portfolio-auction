@@ -24,9 +24,12 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [ ] Add GitHub Actions for CI/CD
 - [ ] Frontend
   - [X] Create Login and Registration page
-  - [ ] Create active Portfolio listing, detail and bid page
+  - [X] Create active Portfolios listing and detail page
   - [ ] Create view owned portfolios and bids page
+  - [X] Create admin dashboard for managing portfolios
+  - [ ] Create admin create portfolio(s) page
   - [ ] Implement real-time updates using WebSockets
+  - [ ] Implement notifications UI
 - [ ] Integrate frontend with backend APIs
 - [ ] Create Docker setup for easy deployment
 - [ ] Write comprehensive documentation

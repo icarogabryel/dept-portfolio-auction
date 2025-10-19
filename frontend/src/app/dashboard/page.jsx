@@ -20,11 +20,11 @@ function getBidButton(selected) {
 
 export default function Page() {
   return (
-    <PageLayout title="Portfolios in Auction" showBack={false}>
+    <PageLayout title="All Portfolios" showBack={false}>
       <PortfolioListDetails
         fetchPortfolios={fetchActivePortfolios}
         detailsCustom={getBidButton}
-        showAdminActions={false}
+        showAdminActions={true}
       />
     </PageLayout>
   );
