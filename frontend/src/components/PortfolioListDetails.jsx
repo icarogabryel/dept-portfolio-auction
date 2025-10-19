@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { createBid, updateBid, getBidsForPortfolio } from '../services/bids';
+
 function EditPortfolioModal({ portfolio, onClose, onSave }) {
   const [name, setName] = useState(portfolio.name);
   const [description, setDescription] = useState(portfolio.description);
@@ -39,7 +42,6 @@ function EditPortfolioModal({ portfolio, onClose, onSave }) {
     </div>
   );
 }
-import React, { useEffect, useState } from 'react';
 
 function getCurrentValue(portfolio) {
   if (portfolio.bids && portfolio.bids.length > 0) {
@@ -52,13 +54,17 @@ function getCurrentValue(portfolio) {
 export default function PortfolioListDetails({
   fetchPortfolios,
   rightCustom,
-  showAdminActions = false
+  showAdminActions = false,
+  currentUser = null
 }) {
   const [portfolios, setPortfolios] = useState([]);
   const [selected, setSelected] = useState(null);
   const [editPortfolio, setEditPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bidLoading, setBidLoading] = useState(false);
+  const [bidError, setBidError] = useState(null);
+  const [bidValue, setBidValue] = useState(0);
 
   useEffect(() => {
     fetchPortfolios()
@@ -66,6 +72,46 @@ export default function PortfolioListDetails({
       .catch(() => setError('Failed to load portfolios.'))
       .finally(() => setLoading(false));
   }, [fetchPortfolios]);
+
+  useEffect(() => {
+    if (selected) {
+      getBidsForPortfolio(selected.id)
+        .then(response => {
+          const bidsArray = Array.isArray(response.data) ? response.data : [];
+          setSelected(prev => ({ ...prev, bids: bidsArray }));
+        })
+        .catch(() => {
+          setSelected(prev => ({ ...prev, bids: [] }));
+        });
+    }
+  }, [selected?.id]);
+
+  useEffect(() => {
+    if (selected && Array.isArray(selected.bids)) {
+      const userBid = currentUser ? selected.bids.find(b => b.user === currentUser) : null;
+      const highestBid = selected.bids.length > 0 ? Math.max(...selected.bids.map(b => Number(b.amount))) : null;
+      setBidValue(userBid ? Number(userBid.amount) : highestBid ? highestBid + 1 : Number(selected.minimum_bid));
+    }
+  }, [selected, currentUser]);
+
+  const handleBid = async () => {
+    if (!selected) return;
+    setBidLoading(true);
+    setBidError(null);
+    try {
+      const userBid = currentUser && Array.isArray(selected.bids) ? selected.bids.find(b => b.user === currentUser) : null;
+      if (!userBid) {
+        await createBid({ portfolioId: selected.id, amount: bidValue });
+      } else {
+        await updateBid({ bidId: userBid.id, amount: bidValue });
+      }
+      fetchPortfolios().then(setPortfolios);
+    } catch (err) {
+      setBidError('Failed to submit bid.');
+    } finally {
+      setBidLoading(false);
+    }
+  };
 
   return (
     <div style={{ display: 'flex', gap: '2rem', minHeight: 400 }}>
@@ -100,11 +146,19 @@ export default function PortfolioListDetails({
               <h4>Bids</h4>
               {selected.bids && selected.bids.length > 0 ? (
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {selected.bids.sort((a, b) => Number(a.amount) - Number(b.amount)).map((bid) => (
-                    <li key={bid.id} style={{ marginBottom: '0.5rem' }}>
-                      <span><b>${Number(bid.amount).toLocaleString()}</b> by {bid.user || 'Unknown'}</span>
-                    </li>
-                  ))}
+                  {selected.bids
+                    .sort((a, b) => Number(b.amount) - Number(a.amount))
+                    .map((bid, idx) => {
+                      const isWinning = idx === 0;
+                      return (
+                        <li key={bid.id} style={{ marginBottom: '0.5rem', background: isWinning ? '#e8f5e9' : '#f5f5f5', borderRadius: 4, padding: '0.3rem 0.7rem' }}>
+                          <span style={{ color: isWinning ? '#388e3c' : '#666', fontWeight: isWinning ? 700 : 500 }}>
+                            ${Number(bid.amount).toLocaleString()} by {bid.user || 'Unknown'}
+                            {isWinning && <span style={{ marginLeft: 8, color: '#388e3c', fontWeight: 600 }}>&#x2714; This bid is winning!</span>}
+                          </span>
+                        </li>
+                      );
+                    })}
                 </ul>
               ) : (
                 <div style={{ color: '#888' }}>No bids yet.</div>
@@ -118,15 +172,29 @@ export default function PortfolioListDetails({
                 </>
               ) : (
                 (() => {
-                  const userBid = null;
-                  const highestBid = selected.bids && selected.bids.length > 0 ? Math.max(...selected.bids.map(b => Number(b.amount))) : null;
+                  const userBid = currentUser && Array.isArray(selected.bids) ? selected.bids.find(b => b.user === currentUser) : null;
+                  const highestBid = Array.isArray(selected.bids) && selected.bids.length > 0 ? Math.max(...selected.bids.map(b => Number(b.amount))) : null;
+
                   if (!userBid) {
-                    return <button style={{background:'#1a237e',color:'#fff',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'pointer'}}>Do Bid</button>;
+                    return (
+                      <>
+                        <input type="number" min={highestBid ? highestBid + 1 : selected.minimum_bid} value={bidValue} onChange={e => setBidValue(Number(e.target.value))} style={{ marginRight: 8, padding: '0.5rem', borderRadius: 4, border: '1px solid #ccc' }} />
+                        <button style={{background:'#1a237e',color:'#fff',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'pointer'}} onClick={handleBid} disabled={bidLoading}>Do Bid</button>
+                        {bidError && <span style={{ color: 'red', marginLeft: 8 }}>{bidError}</span>}
+                      </>
+                    );
                   }
-                  if (userBid && userBid < highestBid) {
-                    return <button style={{background:'#eee',color:'#888',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'not-allowed'}} disabled>Outbid</button>;
+                  if (userBid && Number(userBid.amount) < highestBid) {
+                    return (
+                      <>
+                        <input type="number" min={highestBid + 1} value={bidValue} onChange={e => setBidValue(Number(e.target.value))} style={{ marginRight: 8, padding: '0.5rem', borderRadius: 4, border: '1px solid #ccc' }} />
+                        <button style={{background:'#1a237e',color:'#fff',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'pointer'}} onClick={handleBid} disabled={bidLoading}>Increase Bid</button>
+                        <button style={{background:'#eee',color:'#888',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'not-allowed', marginLeft: 8}} disabled>Outbid</button>
+                        {bidError && <span style={{ color: 'red', marginLeft: 8 }}>{bidError}</span>}
+                      </>
+                    );
                   }
-                  if (userBid && userBid >= highestBid) {
+                  if (userBid && Number(userBid.amount) >= highestBid) {
                     return <button style={{background:'#1a237e',color:'#fff',border:'none',borderRadius:4,padding:'0.7rem 1.5rem',fontWeight:600,cursor:'not-allowed'}} disabled>You are winning!</button>;
                   }
                 })()
