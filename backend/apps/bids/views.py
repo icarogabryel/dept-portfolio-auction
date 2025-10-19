@@ -1,5 +1,7 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from typing import Any
+
 from rest_framework import permissions
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from .models import Bid
 from .serializers import BidSerializer
@@ -9,7 +11,7 @@ class BidCollectionView(ListCreateAPIView):
     serializer_class = BidSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         queryset = Bid.objects.all()
         portfolio = self.request.GET.get('portfolio')
         if portfolio:
