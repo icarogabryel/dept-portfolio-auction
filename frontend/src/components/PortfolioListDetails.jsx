@@ -188,7 +188,7 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
                   type="number"
                   step="0.01"
                   placeholder={isUserWinning ? "You're winning!" : "Enter amount"}
-                  value={isUserWinning ? "You're winning!" : bidAmount}
+                  value={isUserWinning ? '' : bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
                   disabled={submitting || isUserWinning}
                   className="bid-input"
