@@ -11,3 +11,7 @@ export async function updateBid({ bidId, amount }) {
 export async function getBidsOfActivePortfolio(portfolioId) {
   return axiosInstance.get(`/bids/actives/?portfolio=${portfolioId}`);
 }
+
+export async function getBidsOfPortfolio(portfolioId) {
+  return axiosInstance.get(`/bids/?portfolio=${portfolioId}`);
+}

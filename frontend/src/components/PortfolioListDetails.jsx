@@ -7,7 +7,7 @@ import ConfirmModal from './ConfirmModal';
 import EditPortfolioModal from './EditPortfolioModal';
 import './portfolioListDetails.css';
 
-export default function PortfolioListDetails({ fetchPortfolios, showAdminActions = false }) {
+export default function PortfolioListDetails({ fetchPortfolios, fetchBids = getBidsOfActivePortfolio, showAdminActions = false }) {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [bids, setBids] = useState([]);
@@ -47,7 +47,7 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
       setLoadingBids(true);
       setError('');
       setBidAmount('');
-      getBidsOfActivePortfolio(selectedPortfolio.id)
+      fetchBids(selectedPortfolio.id)
         .then(response => {
           setBids(response.data);
           // If there are no bids, set bid amount with minimum bid
@@ -58,7 +58,7 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
         .catch(err => console.error(err))
         .finally(() => setLoadingBids(false));
     }
-  }, [selectedPortfolio]);
+  }, [selectedPortfolio, fetchBids]);
 
   const handleCreateUpdateBid = async () => {
     if (!bidAmount || parseFloat(bidAmount) <= 0) {
@@ -106,7 +106,7 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
       }
 
       // Reload bids after successful create/update
-      const response = await getBidsOfActivePortfolio(selectedPortfolio.id);
+      const response = await fetchBids(selectedPortfolio.id);
       setBids(response.data);
       setBidAmount('');
     } catch (err) {

@@ -2,7 +2,7 @@ from typing import Any
 
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, UpdateAPIView
 
 from ..portfolios.models import Portfolio
 from .models import Bid
@@ -47,3 +47,17 @@ class BidUpdateView(UpdateAPIView):
         if not bid.portfolio.is_active:
             raise PermissionDenied("Cannot update bid for an inactive portfolio")
         serializer.save()
+
+
+class BidListView(ListAPIView):
+    """View to list and create bids for any portfolios."""
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = BidListSerializer
+
+    def get_queryset(self) -> Any:
+        queryset = Bid.objects.all()
+        portfolio_id = self.request.GET.get('portfolio')
+
+        if portfolio_id:
+            queryset = queryset.filter(portfolio_id=portfolio_id)
+        return queryset
