@@ -94,6 +94,27 @@
   border-radius: 4px;
 }
 
+.bid-item.winning {
+  background: #e8f5e9;
+  border-left: 3px solid #4caf50;
+}
+
+.bid-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.winning-badge {
+  color: #4caf50;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .no-bids {
   color: #999;
   font-style: italic;

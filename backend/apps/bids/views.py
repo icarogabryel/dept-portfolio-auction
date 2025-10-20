@@ -2,20 +2,21 @@ from typing import Any
 
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView
 
 from ..portfolios.models import Portfolio
 from .models import Bid
-from .serializers import BidCreateSerializer, BidListSerializer
+from .permissions import IsOwner
+from .serializers import BidCreateUpdateSerializer, BidListSerializer
 
 
-class BidOfActivesCollectionView(ListCreateAPIView):
+class BidOfActivesListView(ListCreateAPIView):
     """View to list and create bids for active portfolios."""
     permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self) -> Any:
         if self.request.method == 'POST':
-            return BidCreateSerializer
+            return BidCreateUpdateSerializer
         return BidListSerializer
 
     def get_queryset(self) -> Any:
@@ -32,17 +33,17 @@ class BidOfActivesCollectionView(ListCreateAPIView):
             queryset = queryset.filter(portfolio_id=portfolio_id)
         return queryset
 
-    def perform_create(self, serializer: BidCreateSerializer):
+    def perform_create(self, serializer: BidCreateUpdateSerializer):
         serializer.save(user=self.request.user)
 
 
-# class BidResourceView(RetrieveUpdateDestroyAPIView):
-#     queryset = Bid.objects.all()
-#     serializer_class = BidSerializer
-#     permission_classes = [permissions.IsAuthenticated]
+class BidUpdateView(UpdateAPIView):
+    queryset = Bid.objects.all()
+    serializer_class = BidCreateUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
 
-#     def perform_update(self, serializer):
-#         serializer.save()
-
-#     def perform_destroy(self, instance):
-#         instance.delete()
+    def perform_update(self, serializer):
+        bid = self.get_object()
+        if not bid.portfolio.is_active:
+            raise PermissionDenied("Cannot update bid for an inactive portfolio")
+        serializer.save()

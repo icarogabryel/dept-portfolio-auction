@@ -5,7 +5,7 @@ export async function createBid({ portfolioId, amount }) {
 }
 
 export async function updateBid({ bidId, amount }) {
-  return axiosInstance.patch(`/bids/${bidId}/`, { amount });
+  return axiosInstance.patch(`/bids/actives/${bidId}/`, { amount });
 }
 
 export async function getBidsOfActivePortfolio(portfolioId) {

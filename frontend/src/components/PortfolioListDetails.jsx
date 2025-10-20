@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { getBidsOfActivePortfolio, createBid } from '../services/bids';
+import { getBidsOfActivePortfolio, createBid, updateBid } from '../services/bids';
+import { getUserProfile } from '../services/users';
 import './portfolioListDetails.css';
 
 export default function PortfolioListDetails({ fetchPortfolios }) {
@@ -12,8 +13,23 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
   const [bidAmount, setBidAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [currentUsername, setCurrentUsername] = useState('');
 
   useEffect(() => {
+    // Get logged username info for bid comparison
+    const fetchCurrentUser = async () => {
+      const tokenAccess = localStorage.getItem('tokenAccess');
+      if (tokenAccess) {
+        try {
+          const res = await getUserProfile(tokenAccess);
+          setCurrentUsername(res.data.username || '');
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+    fetchCurrentUser();
+
     fetchPortfolios()
       .then(data => setPortfolios(data))
       .catch(err => console.error(err))
@@ -38,22 +54,52 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
     }
   }, [selectedPortfolio]);
 
-  const handleCreateBid = async () => {
+  const handleCreateUpdateBid = async () => {
     if (!bidAmount || parseFloat(bidAmount) <= 0) {
       setError('Please enter a valid amount');
       return;
+    }
+
+    const amount = parseFloat(bidAmount);
+
+    // Validation before submitting
+    if (bids.length === 0) {
+      // If there are no bids, validate against minimum_bid
+      if (amount < parseFloat(selectedPortfolio.minimum_bid)) {
+        setError(`Bid must be at least the minimum bid of $${selectedPortfolio.minimum_bid}`);
+        return;
+      }
+    } else {
+      // If there are existing bids, validate against highest bid (first in the list)
+      const highestBid = parseFloat(bids[0].amount);
+      if (amount <= highestBid) {
+        setError(`Bid must be greater than the current highest bid of $${highestBid}`);
+        return;
+      }
     }
 
     setSubmitting(true);
     setError('');
 
     try {
-      await createBid({
-        portfolioId: selectedPortfolio.id,
-        amount: parseFloat(bidAmount)
-      });
+      // Check if the user already has a bid on this portfolio
+      const userBid = bids.find(bid => bid.user === currentUsername);
 
-      // Recarrega os bids após criar com sucesso
+      if (userBid) {
+        // If they already have a bid, update it
+        await updateBid({
+          bidId: userBid.id,
+          amount: amount
+        });
+      } else {
+        // If they don't have a bid, create a new one
+        await createBid({
+          portfolioId: selectedPortfolio.id,
+          amount: amount
+        });
+      }
+
+      // Reload bids after successful create/update
       const response = await getBidsOfActivePortfolio(selectedPortfolio.id);
       setBids(response.data);
       setBidAmount('');
@@ -65,6 +111,10 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
   };
 
   if (loading) return <p>Loading...</p>;
+
+  // Check if the user is winning (first bid in the list)
+  const winningBid = bids.length > 0 ? bids[0] : null;
+  const isUserWinning = winningBid && winningBid.user === currentUsername;
 
   return (
     <div className="portfolio-container">
@@ -110,11 +160,25 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
                 <p className="no-bids">No bids yet</p>
               ) : (
                 <div className="bids-list">
-                  {bids.map((bid) => (
-                    <div key={bid.id} className="bid-item">
-                      ${bid.amount} by {bid.user}
-                    </div>
-                  ))}
+                  {bids.map((bid, index) => {
+                    const isWinning = index === 0;
+                    const isCurrentUserBid = bid.user === currentUsername;
+                    return (
+                      <div
+                        key={bid.id}
+                        className={`bid-item ${isWinning ? 'winning' : ''}`}
+                      >
+                        <div className="bid-content">
+                          ${bid.amount} by {bid.user}
+                          {isWinning && (
+                            <span className="winning-badge">
+                              ✓ This bid is winning
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -123,15 +187,16 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="Enter amount"
-                  value={bidAmount}
+                  placeholder={isUserWinning ? "You're winning!" : "Enter amount"}
+                  value={isUserWinning ? "You're winning!" : bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
-                  disabled={submitting}
+                  disabled={submitting || isUserWinning}
                   className="bid-input"
+                  readOnly={isUserWinning}
                 />
                 <button
-                  onClick={handleCreateBid}
-                  disabled={submitting || !bidAmount}
+                  onClick={handleCreateUpdateBid}
+                  disabled={submitting || !bidAmount || isUserWinning}
                   className="bid-button"
                 >
                   {submitting ? 'Submitting...' : (bids.length === 0 ? 'Do Bid' : 'Outbid')}
