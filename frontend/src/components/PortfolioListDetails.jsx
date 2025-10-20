@@ -4,7 +4,7 @@ import { getBidsOfActivePortfolio, createBid, updateBid } from '../services/bids
 import { getUserProfile } from '../services/users';
 import './portfolioListDetails.css';
 
-export default function PortfolioListDetails({ fetchPortfolios }) {
+export default function PortfolioListDetails({ fetchPortfolios, showAdminActions = false }) {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [bids, setBids] = useState([]);
@@ -186,24 +186,37 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
               </div>
 
               <div className="bid-form">
-                {error && <p className="error-message">{error}</p>}
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder={isUserWinning ? "You're winning!" : "Enter amount"}
-                  value={isUserWinning ? '' : bidAmount}
-                  onChange={(e) => setBidAmount(e.target.value)}
-                  disabled={submitting || isUserWinning}
-                  className="bid-input"
-                  readOnly={isUserWinning}
-                />
-                <button
-                  onClick={handleCreateUpdateBid}
-                  disabled={submitting || !bidAmount || isUserWinning}
-                  className="bid-button"
-                >
-                  {submitting ? 'Submitting...' : (bids.length === 0 ? 'Do Bid' : 'Outbid')}
-                </button>
+                {showAdminActions ? (
+                  <div className="admin-actions">
+                    <button className="admin-button edit-button">
+                      Edit Portfolio
+                    </button>
+                    <button className="admin-button delete-button">
+                      Delete Portfolio
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {error && <p className="error-message">{error}</p>}
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder={isUserWinning ? "You're winning!" : "Enter amount"}
+                      value={isUserWinning ? '' : bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      disabled={submitting || isUserWinning}
+                      className="bid-input"
+                      readOnly={isUserWinning}
+                    />
+                    <button
+                      onClick={handleCreateUpdateBid}
+                      disabled={submitting || !bidAmount || isUserWinning}
+                      className="bid-button"
+                    >
+                      {submitting ? 'Submitting...' : (bids.length === 0 ? 'Do Bid' : 'Outbid')}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

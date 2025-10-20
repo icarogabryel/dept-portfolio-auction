@@ -9,7 +9,7 @@ function AdminContent() {
     <PageLayout title="All Portfolios" showBack={false}>
       <PortfolioListDetails
         fetchPortfolios={fetchAllPortfolios}
-        //TODO showAdminActions={true}
+        showAdminActions={true}
       />
     </PageLayout>
   );
