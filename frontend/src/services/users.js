@@ -1,17 +1,15 @@
-import axios from 'axios';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+import axiosInstance from './axiosConfig';
 
 export async function loginUser({ username, password }) {
-  return axios.post(`${API_BASE}/users/token/`, { username, password });
+  return axiosInstance.post(`/users/token/`, { username, password });
 }
 
-export async function registerUser({ username, password, first_name, last_name, email }) {
-  return axios.post(`${API_BASE}/users/register/`, { username, password, first_name, last_name, email });
+export async function registerUser({ username, password, first_name, last_name }) {
+  return axiosInstance.post(`/users/register/`, { username, password, first_name, last_name });
 }
 
-export async function getCurrentUser(token) {
-  return axios.get(`${API_BASE}/users/profile/`, {
+export async function getIsAdmin(token) {
+  return axiosInstance.get(`/users/is-admin/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
