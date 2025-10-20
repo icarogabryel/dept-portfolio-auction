@@ -3,9 +3,10 @@ from typing import Any
 from django.contrib.auth.models import User
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserIsAdminSerializer, UserSerializer
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -18,7 +19,7 @@ class UserRegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # Gerar tokens JWT para o usuário registrado
+        # Get tokens for the newly created user
         refresh = RefreshToken.for_user(user)
 
         return Response({
@@ -29,22 +30,17 @@ class UserRegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
+class UserIsAdminView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self) -> Any:
-        return self.request.user
+    def get(self, request, *args, **kwargs):
+        serializer = UserIsAdminSerializer(request.user)
+        return Response(serializer.data)
 
 
-# Only admin users can access this view
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
-
-class UserRetrieveView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self) -> Any:
+        return User.objects.all()

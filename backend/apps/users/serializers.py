@@ -4,11 +4,12 @@ from rest_framework import serializers
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """Serializer for user registration."""
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['id', 'username', 'first_name', 'last_name', 'password']
         read_only_fields = ['id']
         extra_kwargs = {
             'username': {'required': True},
@@ -20,7 +21,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             password=validated_data['password']
@@ -29,7 +29,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serializer to list users for admin purposes"""
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'first_name', 'last_name', 'is_staff']
         read_only_fields = ['id']
+
+
+class UserIsAdminSerializer(serializers.ModelSerializer):
+    """Serializer to check admin status"""
+    class Meta:
+        model = User
+        fields = ['is_staff']
+        read_only_fields = ['is_staff']
