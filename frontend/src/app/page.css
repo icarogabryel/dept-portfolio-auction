@@ -20,7 +20,7 @@
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color 0.2s;
 }
 .form-toggle button.active {
   background: #0158bd;
@@ -53,7 +53,7 @@
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color 0.2s;
 }
 .form button:hover {
   background: #003f86;

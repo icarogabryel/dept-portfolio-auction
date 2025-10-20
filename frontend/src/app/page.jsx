@@ -1,37 +1,56 @@
 "use client";
-import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginUser, registerUser, getCurrentUser } from '../services/users';
+import { useEffect, useState } from 'react';
+import { getIsAdmin, loginUser, registerUser } from '../services/users';
 import './page.css';
 
 export default function Page() {
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ username: '', password: '', first_name: '', last_name: '', email: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleChange = e => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  // Function to route user based on their role
+  const routeUser = async (tokenAccess) => {
+    const userRes = await getIsAdmin(tokenAccess);
+    const user = userRes.data;
+    if (user.is_staff) {
+      router.push('/admin');
+    } else {
+      router.push('/portfolios');
+    }
   };
+
+  // If user is already logged in, redirect based on role
+  useEffect(() => {
+    const checkAuth = async () => {
+      const tokenAccess = localStorage.getItem('tokenAccess');
+      if (tokenAccess) {
+        try {
+          await routeUser(tokenAccess);
+        } catch {
+          // Invalid token, stay on login page
+        }
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   const handleLogin = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      const res = await loginUser({ username: form.username, password: form.password });
-      const token = res.data.access;
-      const refreshToken = res.data.refresh;
-      localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
-      const userRes = await getCurrentUser(token);
-      const user = userRes.data;
-      if (user.is_superuser || user.is_staff) {
-        router.push('/admin');
-      } else {
-        router.push('/portfolios');
-      }
+      const formData = new FormData(e.target);
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      const res = await loginUser({ username, password });
+      const tokenAccess = res.data.access;
+      const tokenRefresh = res.data.refresh;
+      localStorage.setItem('tokenAccess', tokenAccess);
+      localStorage.setItem('tokenRefresh', tokenRefresh);
+      await routeUser(tokenAccess);
     } catch (err) {
       setError('Login failed.');
     } finally {
@@ -44,18 +63,23 @@ export default function Page() {
     setLoading(true);
     setError(null);
     try {
+      const formData = new FormData(e.target);
+      const username = formData.get('username');
+      const password = formData.get('password');
+      const first_name = formData.get('first_name');
+      const last_name = formData.get('last_name');
+
       const res = await registerUser({
-        username: form.username,
-        password: form.password,
-        first_name: form.first_name,
-        last_name: form.last_name,
-        email: form.email
+        username,
+        password,
+        first_name,
+        last_name
       });
-      const token = res.data.access;
-      const refreshToken = res.data.refresh;
-      localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
-      router.push('/portfolios');
+      const tokenAccess = res.data.access;
+      const tokenRefresh = res.data.refresh;
+      localStorage.setItem('tokenAccess', tokenAccess);
+      localStorage.setItem('tokenRefresh', tokenRefresh);
+      await routeUser(tokenAccess);
     } catch (err) {
       setError('Registration failed.');
     } finally {
@@ -73,19 +97,18 @@ export default function Page() {
         {isLogin ? (
           <form className="form" onSubmit={handleLogin}>
             <h2>Login</h2>
-            <input name="username" type="text" placeholder="Username" value={form.username} onChange={handleChange} />
-            <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
+            <input name="username" type="text" placeholder="Username" />
+            <input name="password" type="password" placeholder="Password" />
             <button type="submit" disabled={loading}>Sign In</button>
             {error && <div className="error">{error}</div>}
           </form>
         ) : (
           <form className="form" onSubmit={handleRegister}>
             <h2>Register</h2>
-            <input name="username" type="text" placeholder="Username" value={form.username} onChange={handleChange} />
-            <input name="first_name" type="text" placeholder="First Name" value={form.first_name} onChange={handleChange} />
-            <input name="last_name" type="text" placeholder="Last Name" value={form.last_name} onChange={handleChange} />
-            <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} />
-            <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
+            <input name="username" type="text" placeholder="Username" />
+            <input name="first_name" type="text" placeholder="First Name" />
+            <input name="last_name" type="text" placeholder="Last Name" />
+            <input name="password" type="password" placeholder="Password" />
             <button type="submit" disabled={loading}>Sign Up</button>
             {error && <div className="error">{error}</div>}
           </form>
