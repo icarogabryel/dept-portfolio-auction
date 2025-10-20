@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import './header.css';
+import { useEffect, useState } from 'react';
 import { getUserProfile } from '../services/users';
+import './header.css';
 
 export default function Header() {
   const router = useRouter();

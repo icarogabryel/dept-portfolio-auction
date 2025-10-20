@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { getBidsOfActivePortfolio, createBid, updateBid } from '../services/bids';
+import { createBid, getBidsOfActivePortfolio, updateBid } from '../services/bids';
+import { deletePortfolio, updatePortfolio } from '../services/portfolios';
 import { getUserProfile } from '../services/users';
+import ConfirmModal from './ConfirmModal';
+import EditPortfolioModal from './EditPortfolioModal';
 import './portfolioListDetails.css';
 
 export default function PortfolioListDetails({ fetchPortfolios, showAdminActions = false }) {
@@ -14,6 +17,9 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [currentUsername, setCurrentUsername] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     // Get logged username info for bid comparison
@@ -110,6 +116,44 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
     }
   };
 
+  const handleEditPortfolio = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSavePortfolio = async (updatedData) => {
+    await updatePortfolio(selectedPortfolio.id, updatedData);
+    // Reload portfolios list
+    const data = await fetchPortfolios();
+    setPortfolios(data);
+    // Update selected portfolio with new data
+    const updated = data.find(p => p.id === selectedPortfolio.id);
+    if (updated) {
+      setSelectedPortfolio(updated);
+    }
+  };
+
+  const handleDeletePortfolio = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setDeleting(true);
+    try {
+      await deletePortfolio(selectedPortfolio.id);
+      // Reload portfolios list
+      const data = await fetchPortfolios();
+      setPortfolios(data);
+      // Clear selection
+      setSelectedPortfolio(null);
+      setShowDeleteModal(false);
+    } catch (err) {
+      console.error('Failed to delete portfolio:', err);
+      alert('Failed to delete portfolio');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
 
   // Check if the user is winning (first bid in the list)
@@ -188,10 +232,10 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
               <div className="bid-form">
                 {showAdminActions ? (
                   <div className="admin-actions">
-                    <button className="admin-button edit-button">
+                    <button className="admin-button edit-button" onClick={handleEditPortfolio}>
                       Edit Portfolio
                     </button>
-                    <button className="admin-button delete-button">
+                    <button className="admin-button delete-button" onClick={handleDeletePortfolio}>
                       Delete Portfolio
                     </button>
                   </div>
@@ -222,6 +266,26 @@ export default function PortfolioListDetails({ fetchPortfolios, showAdminActions
           </div>
         )}
       </div>
+
+      {/* Edit Portfolio Modal */}
+      {showEditModal && (
+        <EditPortfolioModal
+          portfolio={selectedPortfolio}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSavePortfolio}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <ConfirmModal
+          title="Delete Portfolio"
+          message={`Are you sure you want to delete "${selectedPortfolio.name}"? This action cannot be undone.`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteModal(false)}
+          confirming={deleting}
+        />
+      )}
     </div>
   );
 }
