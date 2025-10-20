@@ -1,0 +1,57 @@
+.page-layout-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-layout-content-wrapper {
+  flex: 1;
+  width: 100%;
+  background: #f7f7fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-layout-header-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 70px;
+  flex-shrink: 0;
+}
+
+.page-layout-back-button {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0158bd;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.page-layout-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #0158bd;
+}
+
+.page-layout-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}

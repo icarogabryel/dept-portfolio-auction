@@ -2,7 +2,8 @@
   display: flex;
   gap: 20px;
   flex: 1;
-  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .portfolio-list {
@@ -11,6 +12,7 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .portfolio-list h3 {
@@ -40,9 +42,21 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Portfolio detail */
+.portfolio-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.portfolio-info {
+  flex-shrink: 0;
+}
+
 .empty-state {
   color: #999;
   text-align: center;
@@ -58,6 +72,7 @@
 
 .description {
   margin-top: 20px;
+  margin-bottom: 0;
 }
 
 .description p {
@@ -72,16 +87,16 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .bids-section h3 {
   margin: 0 0 10px 0;
   font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .bids-list {
-  flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -118,17 +133,26 @@
 .no-bids {
   color: #999;
   font-style: italic;
+  flex-shrink: 0;
+}
+
+.bids-list-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Add, update Bid Form */
 .bid-form {
-  margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #ddd;
   display: flex;
   gap: 10px;
   align-items: flex-start;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .bid-input {

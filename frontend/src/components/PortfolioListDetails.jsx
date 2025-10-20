@@ -140,47 +140,50 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
             Select a portfolio to see details
           </div>
         ) : (
-          <div>
-            <h2>{selectedPortfolio.name}</h2>
-            <div className="details-grid">
-              <div><strong>Total Amount:</strong> ${selectedPortfolio.total_amount}</div>
-              <div><strong>Minimum Bid:</strong> ${selectedPortfolio.minimum_bid}</div>
-              <div><strong>Auction End:</strong> {new Date(selectedPortfolio.auction_end).toLocaleString()}</div>
-            </div>
-            <div className="description">
-              <strong>Description:</strong>
-              <p>{selectedPortfolio.description}</p>
+          <div className="portfolio-content">
+            <div className="portfolio-info">
+              <h2>{selectedPortfolio.name}</h2>
+              <div className="details-grid">
+                <div><strong>Total Amount:</strong> ${selectedPortfolio.total_amount}</div>
+                <div><strong>Minimum Bid:</strong> ${selectedPortfolio.minimum_bid}</div>
+                <div><strong>Auction End:</strong> {new Date(selectedPortfolio.auction_end).toLocaleString()}</div>
+              </div>
+              <div className="description">
+                <strong>Description:</strong>
+                <p>{selectedPortfolio.description}</p>
+              </div>
             </div>
 
             <div className="bids-section">
               <h3>Bids</h3>
-              {loadingBids ? (
-                <p>Loading bids...</p>
-              ) : bids.length === 0 ? (
-                <p className="no-bids">No bids yet</p>
-              ) : (
-                <div className="bids-list">
-                  {bids.map((bid, index) => {
-                    const isWinning = index === 0;
-                    const isCurrentUserBid = bid.user === currentUsername;
-                    return (
-                      <div
-                        key={bid.id}
-                        className={`bid-item ${isWinning ? 'winning' : ''}`}
-                      >
-                        <div className="bid-content">
-                          ${bid.amount} by {bid.user}
-                          {isWinning && (
-                            <span className="winning-badge">
-                              ✓ This bid is winning
-                            </span>
-                          )}
+              <div className="bids-list-wrapper">
+                {loadingBids ? (
+                  <p>Loading bids...</p>
+                ) : bids.length === 0 ? (
+                  <p className="no-bids">No bids yet</p>
+                ) : (
+                  <div className="bids-list">
+                    {bids.map((bid, index) => {
+                      const isWinning = index === 0;
+                      return (
+                        <div
+                          key={bid.id}
+                          className={`bid-item ${isWinning ? 'winning' : ''}`}
+                        >
+                          <div className="bid-content">
+                            ${bid.amount} by {bid.user}
+                            {isWinning && (
+                              <span className="winning-badge">
+                                ✓ This bid is winning
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
               <div className="bid-form">
                 {error && <p className="error-message">{error}</p>}
