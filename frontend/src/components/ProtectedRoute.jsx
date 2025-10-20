@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getIsAdmin } from '../services/users';
+import { getUserProfile } from '../services/users';
 
 export default function ProtectedRoute({ children, adminRequired = false }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children, adminRequired = false }) {
       }
 
       try {
-        const userRes = await getIsAdmin(tokenAccess);
+        const userRes = await getUserProfile(tokenAccess);
         const user = userRes.data;
 
         // Redirect if admin access is required but user is not admin

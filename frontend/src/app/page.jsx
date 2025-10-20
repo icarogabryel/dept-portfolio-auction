@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getIsAdmin, loginUser, registerUser } from '../services/users';
+import { getUserProfile, loginUser, registerUser } from '../services/users';
 import './page.css';
 
 export default function Page() {
@@ -12,7 +12,7 @@ export default function Page() {
 
   // Function to route user based on their role
   const routeUser = async (tokenAccess) => {
-    const userRes = await getIsAdmin(tokenAccess);
+    const userRes = await getUserProfile(tokenAccess);
     const user = userRes.data;
     if (user.is_staff) {
       router.push('/admin');
