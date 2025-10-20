@@ -89,6 +89,9 @@ export default function Page() {
 
   return (
     <div className="home-container">
+      <div>
+        <img src="/logoipsum.svg" type="image/svg+xml" alt="App Logo" style={{marginBottom: '20px'}}/>
+      </div>
       <div className="form-toggle">
         <button className={isLogin ? 'active' : ''} onClick={() => setIsLogin(true)}>Login</button>
         <button className={!isLogin ? 'active' : ''} onClick={() => setIsLogin(false)}>Register</button>
