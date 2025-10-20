@@ -1,16 +1,24 @@
 "use client";
-import React from 'react';
-import PageLayout from '../../layouts/PageLayout';
 import PortfolioListDetails from '../../components/PortfolioListDetails';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import PageLayout from '../../layouts/PageLayout';
 import { fetchAllPortfolios } from '../../services/portfolios';
 
-export default function Page() {
+function AdminContent() {
   return (
     <PageLayout title="All Portfolios" showBack={false}>
       <PortfolioListDetails
         fetchPortfolios={fetchAllPortfolios}
-        showAdminActions={true}
+        //TODO showAdminActions={true}
       />
     </PageLayout>
+  );
+}
+
+export default function Page() {
+  return (
+    <ProtectedRoute adminRequired={true}>
+      <AdminContent />
+    </ProtectedRoute>
   );
 }
