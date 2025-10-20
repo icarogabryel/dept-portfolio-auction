@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer, UserIsAdminSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserProfileSerializer, UserSerializer
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -28,11 +28,11 @@ class UserRegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class UserIsAdminView(APIView):
+class UserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        serializer = UserIsAdminSerializer(request.user)
+        serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
 

@@ -36,9 +36,9 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-class UserIsAdminSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer to check admin status"""
     class Meta:
         model = User
-        fields = ['is_staff']
-        read_only_fields = ['is_staff']
+        fields = ['id', 'first_name', 'is_staff']
+        read_only_fields = ['id', 'first_name', 'is_staff']

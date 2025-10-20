@@ -8,8 +8,8 @@ export async function registerUser({ username, password, first_name, last_name }
   return axiosInstance.post(`/users/register/`, { username, password, first_name, last_name });
 }
 
-export async function getIsAdmin(token) {
-  return axiosInstance.get(`/users/is-admin/`, {
+export async function getUserProfile(token) {
+  return axiosInstance.get(`/users/profile/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
