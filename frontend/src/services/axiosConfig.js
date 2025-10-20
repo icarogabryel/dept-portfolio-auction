@@ -6,6 +6,22 @@ const axiosInstance = axios.create({
   baseURL: API_BASE,
 });
 
+axiosInstance.interceptors.request.use(
+  config => {
+    const publicRoutes = ['/users/token/', '/users/register/', '/users/token/refresh/'];
+    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+
+    if (!isPublicRoute) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('tokenAccess') : null;
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
 // Flag indicating if a token refresh request is currently in progress
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -58,10 +74,6 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = response.data.access;
         // Store the new token for subsequent requests
         localStorage.setItem('tokenAccess', newAccessToken);
-
-        // Update default header on axiosInstance and original request
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
         // Notify all queued requests to retry with the new token
         onRefreshed(newAccessToken);

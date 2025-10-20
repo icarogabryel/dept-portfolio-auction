@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { getBidsOfActivePortfolio } from '../services/bids';
+import { getBidsOfActivePortfolio, createBid } from '../services/bids';
 import './portfolioListDetails.css';
 
 export default function PortfolioListDetails({ fetchPortfolios }) {
@@ -9,6 +9,9 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
   const [bids, setBids] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingBids, setLoadingBids] = useState(false);
+  const [bidAmount, setBidAmount] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchPortfolios()
@@ -20,12 +23,46 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
   useEffect(() => {
     if (selectedPortfolio) {
       setLoadingBids(true);
+      setError('');
+      setBidAmount('');
       getBidsOfActivePortfolio(selectedPortfolio.id)
-        .then(response => setBids(response.data))
+        .then(response => {
+          setBids(response.data);
+          // If there are no bids, set bid amount with minimum bid
+          if (response.data.length === 0) {
+            setBidAmount(selectedPortfolio.minimum_bid);
+          }
+        })
         .catch(err => console.error(err))
         .finally(() => setLoadingBids(false));
     }
   }, [selectedPortfolio]);
+
+  const handleCreateBid = async () => {
+    if (!bidAmount || parseFloat(bidAmount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+
+    try {
+      await createBid({
+        portfolioId: selectedPortfolio.id,
+        amount: parseFloat(bidAmount)
+      });
+
+      // Recarrega os bids após criar com sucesso
+      const response = await getBidsOfActivePortfolio(selectedPortfolio.id);
+      setBids(response.data);
+      setBidAmount('');
+    } catch (err) {
+      setError(err.response?.data?.detail || err.response?.data?.amount?.[0] || 'Failed to create bid');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
 
@@ -80,6 +117,26 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
                   ))}
                 </div>
               )}
+
+              <div className="bid-form">
+                {error && <p className="error-message">{error}</p>}
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter amount"
+                  value={bidAmount}
+                  onChange={(e) => setBidAmount(e.target.value)}
+                  disabled={submitting}
+                  className="bid-input"
+                />
+                <button
+                  onClick={handleCreateBid}
+                  disabled={submitting || !bidAmount}
+                  className="bid-button"
+                >
+                  {submitting ? 'Submitting...' : (bids.length === 0 ? 'Do Bid' : 'Outbid')}
+                </button>
+              </div>
             </div>
           </div>
         )}

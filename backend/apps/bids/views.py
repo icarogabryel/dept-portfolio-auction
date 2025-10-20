@@ -1,18 +1,22 @@
 from typing import Any
 
 from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListCreateAPIView
 
-from .models import Bid
-from .serializers import BidListSerializer
 from ..portfolios.models import Portfolio
-from rest_framework.exceptions import PermissionDenied
+from .models import Bid
+from .serializers import BidCreateSerializer, BidListSerializer
 
 
 class BidOfActivesCollectionView(ListCreateAPIView):
     """View to list and create bids for active portfolios."""
-    serializer_class = BidListSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self) -> Any:
+        if self.request.method == 'POST':
+            return BidCreateSerializer
+        return BidListSerializer
 
     def get_queryset(self) -> Any:
         queryset = Bid.objects.all()
@@ -28,8 +32,8 @@ class BidOfActivesCollectionView(ListCreateAPIView):
             queryset = queryset.filter(portfolio_id=portfolio_id)
         return queryset
 
-    # def perform_create(self, serializer: BidListSerializer):
-    #     serializer.save(user=self.request.user)
+    def perform_create(self, serializer: BidCreateSerializer):
+        serializer.save(user=self.request.user)
 
 
 # class BidResourceView(RetrieveUpdateDestroyAPIView):

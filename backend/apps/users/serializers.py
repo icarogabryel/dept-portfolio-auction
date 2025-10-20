@@ -13,7 +13,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
         extra_kwargs = {
             'username': {'required': True},
-            'email': {'required': True},
             'first_name': {'required': True},
             'last_name': {'required': True},
         }

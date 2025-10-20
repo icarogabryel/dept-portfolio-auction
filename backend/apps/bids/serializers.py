@@ -59,3 +59,10 @@ class BidListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bid
         fields = ['id', 'user', 'amount']
+        read_only_fields = ['id', 'user']
+
+
+class BidCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bid
+        fields = ['portfolio', 'amount']

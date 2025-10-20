@@ -1,7 +1,7 @@
 import axiosInstance from './axiosConfig';
 
 export async function createBid({ portfolioId, amount }) {
-  return axiosInstance.post(`/bids/`, { portfolio: portfolioId, amount });
+  return axiosInstance.post(`/bids/actives/`, { portfolio: portfolioId, amount: amount });
 }
 
 export async function updateBid({ bidId, amount }) {
