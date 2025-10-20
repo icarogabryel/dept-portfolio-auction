@@ -1,11 +1,14 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getBidsOfActivePortfolio } from '../services/bids';
 import './portfolioListDetails.css';
 
 export default function PortfolioListDetails({ fetchPortfolios }) {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+  const [bids, setBids] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingBids, setLoadingBids] = useState(false);
 
   useEffect(() => {
     fetchPortfolios()
@@ -13,6 +16,16 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (selectedPortfolio) {
+      setLoadingBids(true);
+      getBidsOfActivePortfolio(selectedPortfolio.id)
+        .then(response => setBids(response.data))
+        .catch(err => console.error(err))
+        .finally(() => setLoadingBids(false));
+    }
+  }, [selectedPortfolio]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -42,25 +55,31 @@ export default function PortfolioListDetails({ fetchPortfolios }) {
         ) : (
           <div>
             <h2>{selectedPortfolio.name}</h2>
-
-            <div className="detail-row">
-              <label>Total Amount:</label>
-              <div>${selectedPortfolio.total_amount}</div>
+            <div className="details-grid">
+              <div><strong>Total Amount:</strong> ${selectedPortfolio.total_amount}</div>
+              <div><strong>Minimum Bid:</strong> ${selectedPortfolio.minimum_bid}</div>
+              <div><strong>Auction End:</strong> {new Date(selectedPortfolio.auction_end).toLocaleString()}</div>
+            </div>
+            <div className="description">
+              <strong>Description:</strong>
+              <p>{selectedPortfolio.description}</p>
             </div>
 
-            <div className="detail-row">
-              <label>Minimum Bid:</label>
-              <div>${selectedPortfolio.minimum_bid}</div>
-            </div>
-
-            <div className="detail-row">
-              <label>Auction End:</label>
-              <div>{new Date(selectedPortfolio.auction_end).toLocaleString()}</div>
-            </div>
-
-            <div className="detail-row">
-              <label>Description:</label>
-              <div>{selectedPortfolio.description}</div>
+            <div className="bids-section">
+              <h3>Bids</h3>
+              {loadingBids ? (
+                <p>Loading bids...</p>
+              ) : bids.length === 0 ? (
+                <p className="no-bids">No bids yet</p>
+              ) : (
+                <div className="bids-list">
+                  {bids.map((bid) => (
+                    <div key={bid.id} className="bid-item">
+                      ${bid.amount} by {bid.user}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

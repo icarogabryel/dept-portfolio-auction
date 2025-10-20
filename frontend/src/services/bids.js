@@ -8,6 +8,6 @@ export async function updateBid({ bidId, amount }) {
   return axiosInstance.patch(`/bids/${bidId}/`, { amount });
 }
 
-export async function getBidsForPortfolio(portfolioId) {
-  return axiosInstance.get(`/bids/?portfolio=${portfolioId}`);
+export async function getBidsOfActivePortfolio(portfolioId) {
+  return axiosInstance.get(`/bids/actives/?portfolio=${portfolioId}`);
 }

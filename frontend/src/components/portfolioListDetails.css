@@ -1,12 +1,16 @@
 .portfolio-container {
   display: flex;
   gap: 20px;
+  flex: 1;
+  height: 100%;
 }
 
 .portfolio-list {
   width: 300px;
   border: 1px solid #ddd;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .portfolio-list h3 {
@@ -34,6 +38,8 @@
   flex: 1;
   border: 1px solid #ddd;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .empty-state {
@@ -42,12 +48,52 @@
   padding: 50px;
 }
 
-.detail-row {
-  margin-bottom: 15px;
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
 }
 
-.detail-row label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+.description {
+  margin-top: 20px;
+}
+
+.description p {
+  margin: 5px 0 0 0;
+}
+
+.bids-section {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bids-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.bids-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bid-item {
+  padding: 10px;
+  background: #f9f9f9;
+  border-left: 3px solid #0158bd;
+  border-radius: 4px;
+}
+
+.no-bids {
+  color: #999;
+  font-style: italic;
 }
