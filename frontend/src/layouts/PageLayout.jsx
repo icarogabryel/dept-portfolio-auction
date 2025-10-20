@@ -3,9 +3,9 @@ import Header from '../components/Header';
 
 export default function PageLayout({ title, showBack, backAction, children }) {
   return (
-    <div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <div style={{ width: '100%', background: '#f7f7fa'}}>
+      <div style={{ flex: 1, width: '100%', background: '#f7f7fa' }}>
         {(title || showBack) && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', height: 70 }}>
             {showBack && (
