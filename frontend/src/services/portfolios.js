@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import axiosInstance from './axiosConfig';
 
 export async function fetchActivePortfolios() {
-  const res = await axios.get(`${API_BASE}/api/portfolios/active/`);
+  const res = await axiosInstance.get(`/portfolios/active/`);
   return res.data;
 }
 
 export async function fetchAllPortfolios() {
-  const res = await axios.get(`${API_BASE}/api/portfolios/`);
+  const res = await axiosInstance.get(`/portfolios/`);
   return res.data;
 }
