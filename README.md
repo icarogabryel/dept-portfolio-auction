@@ -1,4 +1,4 @@
-# 📊 Debt Portfolio Auction - Complete Technical Documentation
+# 💲 Debt Portfolio Auction - Complete Technical Documentation
 
 <div align="center">
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/icarogabryel/dept-portfolio-auction"/>
