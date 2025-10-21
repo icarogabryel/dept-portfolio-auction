@@ -89,7 +89,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [ ] Add swagger API documentation
   - [ ] Add unit tests for views and models
   - [ ] Add GitHub Actions for CI/CD
-- [ ] Frontend
+- [X] Frontend
   - [X] Create Login and Registration page
   - [X] Create active Portfolios listing and detail page
   - [X] Create view owned portfolios bids page
@@ -98,5 +98,5 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [X] Implement real-time updates using WebSockets in frontend
   - [X] Implement notifications UI
 - [X] Integrate frontend with backend APIs
-- [ ] Create Docker setup for easy deployment
+- [X] Create Docker setup for easy deployment
 - [ ] Write comprehensive documentation
