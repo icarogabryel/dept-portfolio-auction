@@ -28,7 +28,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
 - [ ] Frontend
   - [X] Create Login and Registration page
   - [X] Create active Portfolios listing and detail page
-  - [ ] Create view owned portfolios and bids page
+  - [X] Create view owned portfolios bids page
   - [X] Create admin dashboard for managing and listing all portfolios (active or not)
   - [ ] Create admin create portfolio(s) page
   - [ ] Implement real-time updates using WebSockets in frontend

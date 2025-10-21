@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, UpdateAPIVie
 from ..portfolios.models import Portfolio
 from .models import Bid
 from .permissions import IsOwner
-from .serializers import BidCreateUpdateSerializer, BidListSerializer
+from .serializers import BidCreateUpdateSerializer, BidListSerializer, UserBidListSerializer
 
 
 class BidOfActivesListView(ListCreateAPIView):
@@ -61,3 +61,12 @@ class BidListView(ListAPIView):
         if portfolio_id:
             queryset = queryset.filter(portfolio_id=portfolio_id)
         return queryset
+
+
+class UserBidsView(ListAPIView):
+    """View to list all bids made by the authenticated user."""
+    serializer_class = UserBidListSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self) -> Any:
+        return Bid.objects.filter(user=self.request.user)
