@@ -29,6 +29,8 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 # Application definition
 
 DJANGO_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
@@ -150,3 +152,14 @@ REST_FRAMEWORK = {
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
+
+
+# Channels Configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': env('CHANNELS_LAYERS_BACKEND'),
+        'CONFIG': {
+            "hosts": [env('CHANNELS_BACKEND_URL')],
+        },
+    },
+}

@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useState } from 'react';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { createBid, getBidsOfActivePortfolio, updateBid } from '../services/bids';
 import { deletePortfolio, updatePortfolio } from '../services/portfolios';
 import { getUserProfile } from '../services/users';
@@ -7,7 +9,11 @@ import ConfirmModal from './ConfirmModal';
 import EditPortfolioModal from './EditPortfolioModal';
 import './portfolioListDetails.css';
 
-export default function PortfolioListDetails({ fetchPortfolios, fetchBids = getBidsOfActivePortfolio, showAdminActions = false }) {
+export default function PortfolioListDetails({
+  fetchPortfolios,
+  fetchBids = getBidsOfActivePortfolio,
+  showAdminActions = false
+}) {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [bids, setBids] = useState([]);
@@ -20,6 +26,45 @@ export default function PortfolioListDetails({ fetchPortfolios, fetchBids = getB
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // WebSocket: listener for new portfolios
+  const handlePortfolioMessage = useCallback((data) => {
+    if (data.type === 'portfolio_created') {
+      const newPortfolio = data.portfolio;
+
+      // Add only if the portfolio is active
+      if (newPortfolio.is_active) {
+        setPortfolios(prev => [newPortfolio, ...prev]);
+      }
+    }
+  }, []);
+
+  // WebSocket listener for new bids
+  const handleBidMessage = useCallback((data) => {
+    if (data.type === 'bid_created') {
+      const newBid = data.bid;
+
+      // If the new bid is for the selected portfolio, update bids list
+      if (selectedPortfolio && newBid.portfolio_id === selectedPortfolio.id) {
+        setBids(prev => [newBid, ...prev]);
+      }
+    } else if (data.type === 'bid_updated') {
+      const updatedBid = data.bid;
+
+      // If the updated bid is for the selected portfolio, update it in the list
+      if (selectedPortfolio && updatedBid.portfolio_id === selectedPortfolio.id) {
+        setBids(prev => {
+          // Remove the old bid and add the updated one at the top
+          const filteredBids = prev.filter(bid => bid.id !== updatedBid.id);
+          return [updatedBid, ...filteredBids];
+        });
+      }
+    }
+  }, [selectedPortfolio]);
+
+  // Connect WebSockets
+  useWebSocket('ws://localhost:8000/ws/portfolios/', handlePortfolioMessage);
+  useWebSocket('ws://localhost:8000/ws/bids/', handleBidMessage);
 
   useEffect(() => {
     // Get logged username info for bid comparison
@@ -40,7 +85,7 @@ export default function PortfolioListDetails({ fetchPortfolios, fetchBids = getB
       .then(data => setPortfolios(data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [fetchPortfolios]);
 
   useEffect(() => {
     if (selectedPortfolio) {
