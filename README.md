@@ -4,7 +4,7 @@ This monorepo contains the source code for a web application that makes the auct
 
 <!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
 em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
-organization folder, validation and permissions, JWT authentication, tasks e signals, use of getter (property) and derivated properties, axios, cors headers, blacklist? guive admin access func? economia de bd por um lance por usuario/portfolio, editar perfil? csrf_exempt, owning permissions -->
+organization folder, validation and permissions, JWT authentication, tasks e signals, use of getter (property) and derivated properties, axios, cors headers, blacklist? guive admin access func? economia de bd por um lance por usuario/portfolio, editar perfil? csrf_exempt, owning permissions, signals -->
 
 ## ToDo List
 
@@ -12,7 +12,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [x] Create portfolios model, serializers, views, and URL routing
   - [x] Create bids model, serializers, views, and URL routing
   - [X] Create users serializers, views and URL routing (Uses Django's built-in User model)
-  - [ ] Create notifications model, serializers, views, and URL routing
+  - [ ] Create notifications model, views, and URL routing
   - [ ] Signals to update bids status
   - [ ] Enhance serializers with validation
   - [X] Implement JWT authentication
@@ -20,6 +20,10 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [ ] Lote creation of portfolios
   - [ ] Implement WebSocket support for real-time bidding updates
   - [ ] Implement Celery for background tasks (e.g., closing auctions, sending notifications)
+  - [ ] Implement Notifications system
+    - [X] Send notification when a user is outbid
+    - [ ] Send notification when a portfolio auction is closed (Winner and losers)
+    - [ ] 30 minutes before auction ends
   - [ ] Add unit tests for views and models
   - [ ] Add GitHub Actions for CI/CD
 - [ ] Frontend
