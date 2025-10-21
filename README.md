@@ -86,7 +86,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
     - [X] Send notification when a user is outbid
     - [X] Send notification when a portfolio auction is closed (Winner and losers)
     - [X] 30 minutes before auction ends
-  - [ ] Add swagger API documentation
+  - [X] Add swagger API documentation
   - [ ] Add unit tests for views and models
   - [ ] Add GitHub Actions for CI/CD
 - [X] Frontend
