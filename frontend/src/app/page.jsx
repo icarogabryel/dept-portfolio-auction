@@ -15,7 +15,7 @@ export default function Page() {
     const userRes = await getUserProfile(tokenAccess);
     const user = userRes.data;
     if (user.is_staff) {
-      router.push('/admin');
+      router.push('/admin-dashboard');
     } else {
       router.push('/portfolios');
     }

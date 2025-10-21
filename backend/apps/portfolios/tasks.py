@@ -1,10 +1,15 @@
 import csv
 from datetime import timedelta
 
+from asgiref.sync import async_to_sync
 from celery import shared_task
+from channels.layers import get_channel_layer
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware
 
 from ..notifications.models import Notification, NotificationType
 from .models import Portfolio
+from .serializers import PortfolioSerializer
 
 
 @shared_task
@@ -106,13 +111,41 @@ def schedule_portfolio_notifications(portfolio):
 @shared_task
 def import_csv_task(file_path):
     batch = []
+    created_portfolios = []
+
     with open(file_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
+            # Convert string dates to datetime objects with timezone
+            if 'auction_end' in row and isinstance(row['auction_end'], str):
+                dt = parse_datetime(row['auction_end'])
+                if dt and dt.tzinfo is None:  # If datetime is naive, make it aware
+                    row['auction_end'] = make_aware(dt)
+                else:
+                    row['auction_end'] = dt
+
             batch.append(Portfolio(**row))
             if len(batch) >= 10_000:
-                Portfolio.objects.bulk_create(batch)
+                portfolios = Portfolio.objects.bulk_create(batch)
+                created_portfolios.extend(portfolios)
                 batch.clear()
 
         if batch:
-            Portfolio.objects.bulk_create(batch)
+            portfolios = Portfolio.objects.bulk_create(batch)
+            created_portfolios.extend(portfolios)
+
+    # Send WebSocket notifications for created portfolios
+    channel_layer = get_channel_layer()
+    for portfolio in created_portfolios:
+        # Schedule notifications
+        schedule_portfolio_notifications(portfolio)
+
+        # Send via WebSocket
+        portfolio_data = PortfolioSerializer(portfolio).data
+        async_to_sync(channel_layer.group_send)(
+            'portfolios',
+            {
+                'type': 'portfolio_created',
+                'portfolio': portfolio_data
+            }
+        )

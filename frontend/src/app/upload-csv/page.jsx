@@ -33,7 +33,7 @@ function UploadCsvContent() {
     <PageLayout title="Criar Lotes" showBack={false}>
       <div style={{ marginBottom: '20px' }}>
         <button
-          onClick={() => router.push('/admin')}
+          onClick={() => router.push('/admin-dashboard')}
           style={{
             padding: '10px 20px',
             backgroundColor: '#6c757d',
