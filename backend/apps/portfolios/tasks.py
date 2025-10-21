@@ -1,3 +1,4 @@
+import csv
 from datetime import timedelta
 
 from celery import shared_task
@@ -100,3 +101,18 @@ def schedule_portfolio_notifications(portfolio):
 
     send_closing_soon_notification.apply_async(args=[portfolio.id], eta=closing_soon_time)
     send_auction_ended_notifications.apply_async(args=[portfolio.id], eta=auction_end_time)
+
+
+@shared_task
+def import_csv_task(file_path):
+    batch = []
+    with open(file_path, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            batch.append(Portfolio(**row))
+            if len(batch) >= 10_000:
+                Portfolio.objects.bulk_create(batch)
+                batch.clear()
+
+        if batch:
+            Portfolio.objects.bulk_create(batch)

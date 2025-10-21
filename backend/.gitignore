@@ -9,3 +9,6 @@ __pycache__/
 # Databases (django and celery in dev)
 *.sqlite
 *.sqlite3
+
+# Uploads
+uploads/
