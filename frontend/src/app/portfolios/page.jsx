@@ -26,7 +26,7 @@ function PortfoliosContent() {
           onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
           onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
         >
-          My Bids
+          🪙 My Bids
         </button>
       </div>
 

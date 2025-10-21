@@ -27,7 +27,7 @@ function AdminContent() {
           onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
           onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
         >
-          📁 Criar Lotes
+          📁 Create Portfolios
         </button>
       </div>
 
