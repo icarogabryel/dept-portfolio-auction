@@ -6,6 +6,68 @@ This monorepo contains the source code for a web application that makes the auct
 em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
 organization folder, validation and permissions, JWT authentication, tasks e signals, use of getter (property) and derivated properties, axios, cors headers, blacklist? guive admin access func? economia de bd por um lance por usuario/portfolio, editar perfil? csrf_exempt, owning permissions, signals, tasks -->
 
+## Installation in Development Environment
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/icarogabryel/dept-portfolio-auction.git
+   cd dept-portfolio-auction
+   ```
+
+2. Copy the example environment to create your own `.env` file:
+
+   ```bash
+   cp backend/.env.example backend/.env
+   ```
+
+   ```bash
+    cp frontend/.env.example frontend/.env
+    ```
+
+3. Install Redis if not already installed:
+
+   ```bash
+   sudo apt update
+   sudo apt install redis-server -y
+   ```
+
+4. Make sure Redis is running (Automatically starts on installation, but you can start it manually if needed):
+
+    ```bash
+    redis-server
+    ```
+
+5. Run the installation script:
+
+   ```bash
+   source scripts/install_dev.sh
+   ```
+
+6. Create a superuser for admin access:
+
+   ```bash
+   cd backend
+   python3 manage.py createsuperuser
+   ```
+
+7. Start the development servers:
+    Open two terminal tabs.
+
+    In the first terminal, start the Django development server:
+
+    ```bash
+    cd backend
+    python3 manage.py runserver
+    ```
+
+    In the second terminal, start the React development server:
+
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+
 ## ToDo List
 
 - [ ] Backend
