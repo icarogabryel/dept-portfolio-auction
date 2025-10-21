@@ -129,6 +129,12 @@ This monorepo contains the source code for a complete web system for auctioning 
 
 ---
 
+## 📊 ER DataBase Diagram
+
+![ER Diagram](docs/db.jpg)
+
+The User entity and Portfolio entity have a many-to-many relationship through the Bid relational entity (that means a relation with extra fields). Portfolio has a derived field `is_active` that is not stored in the database but calculated on the fly based on related bids. It also have the `get_winning_bid` method to get the highest bid for that portfolio. If portfolio is closed, `get_winning_bid` returns the winning bid. This is how is possible do calculate the winner, send notification to the winner and losers without storing this information in the database.
+
 ## 🐳 DevOps and CI/CD
 
 This project leverages Docker for consistent and isolated deployment environment, making it easy to run the application anywhere. Docker Compose is used to orchestrate all services (backend, frontend, Redis, and Nginx).
@@ -261,7 +267,7 @@ dept-portfolio-auction/
 
 ---
 
-## ToDo List
+## 📝 ToDo List
 
 - [X] Backend
   - [x] Create portfolios model, serializers, views, and URL routing
