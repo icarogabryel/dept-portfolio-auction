@@ -12,7 +12,7 @@
       <img src="docs/print1.png" alt="Portfolios Screen" width="400"/>
     </td>
     <td align="center">
-      <img src="docs/print2.png" alt="Upload Screen" width="400"/>
+      <img src="docs/print3.png" alt="Upload Screen" width="400"/>
     </td>
   </tr>
 </table>
