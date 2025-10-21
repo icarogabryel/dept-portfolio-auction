@@ -1,14 +1,203 @@
-# Dept Portfolio Auction Web Application
+# 📊 Debt Portfolio Auction - Complete Technical Documentation
 
-![Django CI](https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20CI/badge.svg)
+<div align="center">
+    <img src="https://img.shields.io/github/stars/icarogabryel/dept-portfolio-auction?style=social" alt="GitHub stars"/>
+    <img src="https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20CI/badge.svg" alt="Django CI"/>
+    <img src="https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20Tests/badge.svg" alt="Django Tests"/>
+</div>
 
-This monorepo contains the source code for a web application that makes the auctioning of dept portfolios.
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="docs/print1.png" alt="Portfolios Screen" width="400"/>
+    </td>
+    <td align="center">
+      <img src="docs/print2.png" alt="Upload Screen" width="400"/>
+    </td>
+  </tr>
+</table>
 
-<!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
-em settings, asgi, celery, proteção de sterializers, entidade relacional, project structure, protec de bids
-organization folder, validation and permissions, JWT authentication, tasks e signals, use of getter (property) and derivated properties, axios, cors headers, blacklist? guive admin access func? economia de bd por um lance por usuario/portfolio, editar perfil? csrf_exempt, owning permissions, signals, tasks, consumers -->
+---
 
-## Installation in Development Environment
+## 🎯 Overview
+
+Complete web system for auctioning debt portfolios, allowing users to place real-time bids with automatic notifications and responsive interface. The project was built as a monorepo containing backend (Django) and frontend (Next.js). It uses:
+
+- ✅ JWT authentication with automatic refresh token
+- ✅ Real-time bidding system via WebSockets (Django Channels)
+- ✅ Automatic notifications (outbid, closing soon, win/loss)
+- ✅ Bulk portfolio upload and processing via CSV (Celery)
+- ✅ Administrative dashboard
+- ✅ RESTful API documented with Swagger/OpenAPI
+- ✅ Automated tests with CI/CD
+- ✅ Containerized deployment with Docker
+
+## 🛠 Tech Stack
+
+### **Backend**
+
+| Technology | Purpose |
+|------------|---------|
+| **Python** | Base language |
+| **Django** | Main web framework |
+| **Django REST Framework** | RESTful API |
+| **Daphne** | ASGI server for WebSockets |
+| **Django Channels** | Real-time WebSockets |
+| **Celery** | Asynchronous processing and scheduled tasks |
+| **Redis** | Message broker (Celery) and Channel Layers |
+| **SQLite** | Database (development) |
+| **JWT** | Stateless authentication |
+| **drf-spectacular** | OpenAPI/Swagger documentation |
+| **django-environ** | Environment variables management |
+| **django-cors-headers** | CORS |
+
+### **Frontend**
+
+| Technology | Purpose |
+|------------|---------|
+| **Next.js** | React framework with SSR |
+| **React** | UI library |
+| **Axios** | HTTP client with interceptors |
+| **WebSocket API** | Real-time connections |
+
+### **DevOps**
+
+| Technology | Purpose |
+|------------|---------|
+| **Docker** | Containerization |
+| **Docker Compose** | Container orchestration |
+| **Nginx** | Reverse proxy and static file serving |
+| **GitHub Actions** | CI/CD pipeline |
+
+---
+
+## 🏗 System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         NGINX:80 (Proxy)                        │
+│  - Request routing                                              │
+│  - Serving static files                                         │
+│  - WebSocket upgrade support                                    │
+└────────────┬────────────────────────────────────┬───────────────┘
+             │                                    │
+             ▼                                    ▼
+    ┌────────────────┐                  ┌────────────────────┐
+    │  Frontend:3000 │                  │   Backend:8000     │
+    │   (Next.js)    │◄─────API─────────│  (Django/Daphne)   │
+    │                │                  │                    │
+    │  - SSR/CSR     │                  │  - REST API        │
+    │  - WebSocket   │◄─────WS──────────│  - WebSockets      │
+    │  - Axios       │                  │  - ASGI            │
+    └────────────────┘                  └─┬──────────────────┘
+                                          │
+           ┌──────────────────────────────┼──────────────┐
+           │                              │              │
+           ▼                              ▼              ▼
+       ┌─────────────────┐      ┌────────────────┐  ┌──────────┐
+       │ Celery Worker   │      │   Redis:6379   │  │  SQLite  │
+       │                 │      │                │  │          │
+       │ - CSV Import    │─────►│ - Celery Broker│  │ - Data   │
+       │ - Notifications │      │ - Channel Layer│  │  Storage │
+       └─────────────────┘      └────────────────┘  └──────────┘
+```
+
+## 🔐 Security and Permissions
+
+### Endpoints Permission Matrix
+
+| Endpoint | Anonymous | Authenticated (All) | Owner | Admin |
+|----------|-----------|---------------|-------|-------|
+| `POST /api/users/register/` | ✅ | 🔵 | 🔵 | 🔵 |
+| `POST /api/users/token/` | ✅ | ✅ | ✅ | ✅ |
+| `GET /api/portfolios/actives/` | ❌ | ✅ | ✅ | ✅ |
+| `POST /api/bids/actives/` | ❌ | ✅ | ✅ | ✅ |
+| `PUT /api/bids/{id}/` | ❌ | ❌ | ✅ | ✅ |
+| `GET /api/bids/user/` | ❌ | ❌ | ✅ | ✅ |
+| `POST /api/portfolios/` | ❌ | ❌ | ❌ | ✅ |
+| `POST /api/portfolios/upload-csv/` | ❌ | ❌ | ❌ | ✅ |
+| `GET /api/bids/` | ❌ | ❌ | ❌ | ✅ |
+
+### Business Rules Enforced
+
+- ✅ Only authenticated users can place bids
+- ✅ Cannot create bid on inactive portfolio
+- ✅ Cannot update bid on closed portfolio
+- ✅ Amount must be (>= minimum_bid) or (> current highest bid)
+- ✅ unique_together (1 bid per user/portfolio)
+- ✅ Only owner can edit own bid
+
+---
+
+## 🐳 DevOps and CI/CD
+
+This project leverages Docker for consistent and isolated deployment environment, making it easy to run the application anywhere. Docker Compose is used to orchestrate all services (backend, frontend, Redis, and Nginx).
+
+For quality assurance, a CI pipeline is configured using GitHub Actions, which automatically runs Django tests.
+
+## 🔗 Useful Links
+
+- **Swagger API Docs**: http://localhost/api/docs/
+- **Django Admin**: http://localhost/admin (admin/admin)
+- **Frontend**: http://localhost
+- **GitHub Repository**: https://github.com/icarogabryel/dept-portfolio-auction
+
+---
+
+```
+## 📂 Project Tree
+
+dept-portfolio-auction/
+├── 🧰 .github/
+├── 🧱 backend/
+│ ├── 🧩 apps/
+│ ├── ⚙️ config/
+│ ├── 🎨 staticfiles/
+│ ├── 📤 uploads/
+│ ├── ⛰️ venv/
+│ ├── 📜 manage.py
+│ ├── 🐳 Dockerfile
+│ ├── 📦 requirements.txt
+│ ├── 🧾 entrypoint.sh
+│ ├── 🧱 db.sqlite3
+│ ├── 🐳 .dockerignore
+│ ├── ⛰️ .env.example
+│ ├── ⛰️ .env
+│ └── 😺 .gitignore
+├── 📚 docs/
+├── 💻 frontend/
+│ ├── ⬛ .next/
+│ ├── 🌍 public/
+│ ├── 🧾 src/
+│ │ ├── 🧩 app/
+│ │ ├── 🧩 components/
+│ │ ├── 🪝 hooks/
+│ │ ├── 🎨 layouts/
+│ │ └── 🔧 services/
+│ ├── 📦 node_modules/
+│ ├── 🐳 .dockerignore
+│ ├── ⛰️ .env.example
+│ ├── ⛰️ .env
+│ ├── 😺 .gitignore
+│ ├── 🐳 Dockerfile
+│ ├── 📜 eslint.config.mjs
+│ ├── ⚙️ next.config.mjs
+│ ├── 📦 package.json
+│ ├── 📦 package-lock.json
+│ └── 🧾 jsconfig.json
+├── 🌐 nginx/
+│ └── ⚙️ nginx.conf
+├── 🧰 scripts/
+│ └── 🧾 install_dev.sh
+├── 😺 .gitignore
+├── 🐋 docker-compose.yml
+├── 📘 LICENSE.txt
+└── 🧭 README.md
+```
+
+---
+
+## ⬇️ Installation in Development Environment
 
 1. Clone the repository:
 
@@ -48,7 +237,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
    ```
 
 6. Start the development servers:
-    Open two terminal tabs.
+    Open three terminal tabs.
 
     In the first terminal, make sure Redis is running (Automatically starts on installation, but you can start it manually if needed):
 
@@ -70,7 +259,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
     npm run dev
     ```
 
-## Repository Structure
+---
 
 ## ToDo List
 
@@ -101,4 +290,4 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [X] Implement notifications UI
 - [X] Integrate frontend with backend APIs
 - [X] Create Docker setup for easy deployment
-- [ ] Write comprehensive documentation
+- [X] Write comprehensive documentation
