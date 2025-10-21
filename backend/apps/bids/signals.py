@@ -8,8 +8,6 @@ from .models import Bid
 @receiver(pre_save, sender=Bid)
 def notify_outbid_user(sender, instance, **kwargs):
     """Signal to notify the previous winning bidder when they are outbid."""
-    # Only process if this is a new bid being created (not an update)
-
     portfolio = instance.portfolio
 
     # Get the current winning bid before this new bid is saved
