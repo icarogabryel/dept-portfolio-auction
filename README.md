@@ -144,9 +144,8 @@ For quality assurance, a CI pipeline is configured using GitHub Actions, which a
 ## 🔗 Useful Links
 
 - **Swagger API Docs**: http://localhost/api/docs/
-- **Django Admin**: http://localhost/admin (admin/admin)
+- **Django Admin**: http://localhost/admin
 - **Frontend**: http://localhost
-- **GitHub Repository**: https://github.com/icarogabryel/dept-portfolio-auction
 
 ---
 
