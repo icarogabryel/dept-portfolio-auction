@@ -32,7 +32,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [X] Create admin dashboard for managing and listing all portfolios (active or not)
   - [ ] Create admin create portfolio(s) page
   - [ ] Implement real-time updates using WebSockets in frontend
-  - [ ] Implement notifications UI
+  - [X] Implement notifications UI
 - [X] Integrate frontend with backend APIs
 - [ ] Create Docker setup for easy deployment
 - [ ] Write comprehensive documentation
