@@ -1,19 +1,14 @@
 import Header from '../components/Header';
 import './PageLayout.css';
 
-export default function PageLayout({ title, showBack, backAction, children }) {
+export default function PageLayout({ title, children }) {
   return (
     <div className="page-layout-root">
       <Header />
       <div className="page-layout-content-wrapper">
-        {(title || showBack) && (
+        {title && (
           <div className="page-layout-header-section">
-            {showBack && (
-              <button className="page-layout-back-button" onClick={backAction}>
-                Back
-              </button>
-            )}
-            {title && <h1 className="page-layout-title">{title}</h1>}
+            <h1 className="page-layout-title">{title}</h1>
           </div>
         )}
         <div className="page-layout-content">

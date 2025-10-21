@@ -6,7 +6,7 @@ import { fetchActivePortfolios } from '../../services/portfolios';
 
 function PortfoliosContent() {
   return (
-    <PageLayout title="Portfolios in Auction" showBack={false}>
+    <PageLayout title="Portfolios in Auction">
       <PortfolioListDetails
         fetchPortfolios={fetchActivePortfolios}
       />

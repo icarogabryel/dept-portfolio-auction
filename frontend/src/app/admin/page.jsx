@@ -7,7 +7,7 @@ import { fetchAllPortfolios } from '../../services/portfolios';
 
 function AdminContent() {
   return (
-    <PageLayout title="All Portfolios" showBack={false}>
+    <PageLayout title="All Portfolios">
       <PortfolioListDetails
         fetchPortfolios={fetchAllPortfolios}
         fetchBids={getBidsOfPortfolio}
