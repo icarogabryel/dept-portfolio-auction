@@ -1,5 +1,7 @@
 # Dept Portfolio Auction Web Application
 
+![Django CI](https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20CI/badge.svg)
+
 This monorepo contains the source code for a web application that makes the auctioning of dept portfolios.
 
 <!-- bids status, project on cascate, admin funcionando, namespace api e ws, environ, separação dos apps
@@ -72,7 +74,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
 
 ## ToDo List
 
-- [ ] Backend
+- [X] Backend
   - [x] Create portfolios model, serializers, views, and URL routing
   - [x] Create bids model, serializers, views, and URL routing
   - [X] Create users serializers, views and URL routing (Uses Django's built-in User model)
@@ -87,8 +89,8 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
     - [X] Send notification when a portfolio auction is closed (Winner and losers)
     - [X] 30 minutes before auction ends
   - [X] Add swagger API documentation
-  - [ ] Add unit tests for views and models
-  - [ ] Add GitHub Actions for CI/CD
+  - [X] Add unit tests for models
+  - [X] Add GitHub Actions for CI/CD
 - [X] Frontend
   - [X] Create Login and Registration page
   - [X] Create active Portfolios listing and detail page
