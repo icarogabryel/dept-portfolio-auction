@@ -1,9 +1,9 @@
 # 📊 Debt Portfolio Auction - Complete Technical Documentation
 
 <div align="center">
-    <img src="https://img.shields.io/github/stars/icarogabryel/dept-portfolio-auction?style=social" alt="GitHub stars"/>
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/icarogabryel/dept-portfolio-auction"/>
+    <img alt="GitHub License" src="https://img.shields.io/github/license/icarogabryel/dept-portfolio-auction"/>
     <img src="https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20CI/badge.svg" alt="Django CI"/>
-    <img src="https://github.com/icarogabryel/dept-portfolio-auction/workflows/Django%20Tests/badge.svg" alt="Django Tests"/>
 </div>
 
 <table align="center">
@@ -21,7 +21,7 @@
 
 ## 🎯 Overview
 
-Complete web system for auctioning debt portfolios, allowing users to place real-time bids with automatic notifications and responsive interface. The project was built as a monorepo containing backend (Django) and frontend (Next.js). It uses:
+This monorepo contains the source code for a complete web system for auctioning debt portfolios, allowing users to place real-time bids with automatic notifications and responsive interface. The project was built as a monorepo containing backend (Django) and frontend (Next.js). It uses:
 
 - ✅ JWT authentication with automatic refresh token
 - ✅ Real-time bidding system via WebSockets (Django Channels)
