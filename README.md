@@ -14,9 +14,8 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [X] Create users serializers, views and URL routing (Uses Django's built-in User model)
   - [X] Create notifications model, views, and URL routing
   - [X] Implement JWT authentication
-  - [ ] Enhance serializers with validation
   - [X] Implement authorization (Owning, admin, etc.)
-  - [ ] Lote creation of portfolios
+  - [X] Lote creation of portfolios
   - [ ] Implement WebSocket support for real-time updates using Django Channels
   - [X] Implement Celery for background tasks (e.g., closing auctions, sending notifications)
   - [X] Implement Notifications system
@@ -30,7 +29,7 @@ organization folder, validation and permissions, JWT authentication, tasks e sig
   - [X] Create active Portfolios listing and detail page
   - [X] Create view owned portfolios bids page
   - [X] Create admin dashboard for managing and listing all portfolios (active or not)
-  - [ ] Create admin create portfolio(s) page
+  - [X] Create admin create portfolio(s) page
   - [ ] Implement real-time updates using WebSockets in frontend
   - [X] Implement notifications UI
 - [X] Integrate frontend with backend APIs
